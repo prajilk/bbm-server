@@ -67,7 +67,7 @@ app.post("/api/user/register", async (req, res) => {
 
 app.post("/api/butterfly-count", (req, res) => {
     const data = req.body;
-    if (!data) res.status(400).json({ countSaved: false })
+    if (!data) return res.status(400).json({ countSaved: false })
     saveCounts(data)
         .then(() => res.status(200).json({ countSaved: true }))
         .catch(() => res.status(500).json({ countSaved: false }))
