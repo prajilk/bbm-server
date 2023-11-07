@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config()
 const { validateUser, registerUser, userLogin } = require('./src/controllers/UserController.js');
 const { saveCounts, getCounts } = require('./src/controllers/CountsController.js');
+const { default: axios } = require('axios');
 const PORT = 5000;
 
 //Connect to database
@@ -17,6 +18,20 @@ app.use(cors({ origin: ["http://localhost:3000", "https://bigbutterflymonth.verc
 
 app.get('/', (req, res) => {
     res.send('Server created successfully!');
+})
+
+app.get('/elevation', async (req, res) => {
+    const { latitude, longitude } = req.query;
+    if (!latitude || !longitude) {
+        return res.status(400).json({ error: 'Latitude and longitude are required.' });
+    }
+    try {
+        const elevationURL = `https://api.open-meteo.com/v1/elevation?latitude=${latitude}&longitude=${longitude}`;
+        const { data } = await axios.get(elevationURL);
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
 })
 
 app.post("/api/user/login", async (req, res) => {
