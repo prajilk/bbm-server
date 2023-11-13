@@ -6,9 +6,17 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
             try {
                 const passwordHash = await bcrypt.hash(password, 10);
-                const user = await User.create({ email, fullname, password: passwordHash })
-                if (!user) reject()
-                else resolve(user._id)
+                const userExists = await User.findOne({ email });
+                if (userExists) {
+                    reject({
+                        status: 409,
+                        error: { success: false, message: "Email already exists!" }
+                    })
+                } else {
+                    const user = await User.create({ email, fullname, password: passwordHash })
+                    if (!user) reject()
+                    else resolve(user._id)
+                }
             } catch (error) {
                 reject()
             }

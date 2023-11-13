@@ -62,7 +62,11 @@ app.post("/api/user/register", async (req, res) => {
 
     registerUser(email, fullname, password)
         .then((id) => res.status(200).json({ id: id, registered: true }))
-        .catch(() => res.status(500).json({ registered: false }))
+        .catch((err) => {
+            if (err && err.status === 409)
+                return res.status(409).json({ registered: false, message: 'Email already exists!' })
+            return res.status(500).json({ registered: false })
+        })
 })
 
 app.post("/api/butterfly-count", (req, res) => {
