@@ -22,10 +22,6 @@ app.get('/', (req, res) => {
     res.send('Server created successfully!');
 })
 
-app.get('/test', (req, res) => {
-    res.json({ cookies: req.cookies });
-})
-
 app.get('/elevation', async (req, res) => {
     const { latitude, longitude } = req.query;
     if (!latitude || !longitude) {
@@ -119,7 +115,7 @@ app.get('/api/admin/counts/:user', verifyAdmin, (req, res) => {
         .catch(() => res.status(500).json({ counts: [], user: null }))
 })
 
-app.delete('/api/admin/counts/:id/:user', verifyAdmin, (req, res) => {
+app.delete('/api/admin/counts/:id/:user', (req, res) => {
     deleteCount(req.params.id, req.params.user)
         .then(() => res.status(200).json({ deleted: true }))
         .catch(() => res.status(500).json({ deleted: false }))
