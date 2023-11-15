@@ -22,6 +22,10 @@ app.get('/', (req, res) => {
     res.send('Server created successfully!');
 })
 
+app.get('/test', (req, res) => {
+    res.json({ cookies: req.cookies });
+})
+
 app.get('/elevation', async (req, res) => {
     const { latitude, longitude } = req.query;
     if (!latitude || !longitude) {
