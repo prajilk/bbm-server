@@ -1,6 +1,7 @@
 const { validateAdminDetails } = require("../controllers/AdminController");
 
 async function verifyAdmin(req, res, next) {
+    console.log(req.cookies);
     const adminCookie = req.cookies.admin || "";
     const decodedAdmin = JSON.parse(
         atob(adminCookie) === "" ? "{}" : atob(adminCookie)
