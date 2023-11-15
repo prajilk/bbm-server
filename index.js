@@ -2,9 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 require('dotenv').config()
-const { validateUser, registerUser, userLogin } = require('./src/controllers/UserController.js');
-const { saveCounts, getCounts } = require('./src/controllers/CountsController.js');
+const { validateUser, registerUser, userLogin, getAllUsers } = require('./src/controllers/UserController.js');
+const { saveCounts, getCounts, getAllCounts, deleteCount, getUserCounts } = require('./src/controllers/CountsController.js');
+const verifyAdmin = require('./src/middleware/verifyAdmin.js')
 const { default: axios } = require('axios');
+const { adminLogin } = require('./src/controllers/AdminController.js');
 const PORT = 5000;
 
 //Connect to database
@@ -87,6 +89,42 @@ app.get("/api/butterfly-count", (req, res) => {
     } else {
         res.status(401).json({ countData: [], user: false })
     }
+});
+
+
+app.post("/api/admin/login", (req, res) => {
+    const data = req.body;
+    if (!data) res.status(400).json({ success: false })
+
+    adminLogin(data)
+        .then((admin) => res.status(200).json({ success: true, user: admin }))
+        .catch((error) => res.status(error.status).json(error.error))
+})
+
+app.get('/api/admin/counts', verifyAdmin, (req, res) => {
+    getAllCounts()
+        .then((countData) => res.status(200).json({ counts: countData }))
+        .catch(() => res.status(500).json({ counts: [] }))
+})
+
+app.get('/api/admin/counts/:user', verifyAdmin, (req, res) => {
+    const userId = req.params.user;
+    if (!userId) return res.status(400).json({ counts: [], user: null })
+    getUserCounts(userId)
+        .then((countData) => res.status(200).json({ counts: countData.counts, user: countData.user }))
+        .catch(() => res.status(500).json({ counts: [], user: null }))
+})
+
+app.delete('/api/admin/counts/:id/:user', verifyAdmin, (req, res) => {
+    deleteCount(req.params.id, req.params.user)
+        .then(() => res.status(200).json({ deleted: true }))
+        .catch(() => res.status(500).json({ deleted: false }))
+})
+
+app.get('/api/admin/users', verifyAdmin, (req, res) => {
+    getAllUsers()
+        .then((users) => res.status(200).json({ users }))
+        .catch(() => res.status(500).json({ users: [] }))
 })
 
 app.listen(PORT, console.log(`Server running on Port: ${PORT}`));

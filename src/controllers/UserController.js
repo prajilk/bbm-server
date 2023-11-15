@@ -40,7 +40,6 @@ module.exports = {
                     })
                 }
             } catch (error) {
-                console.log(error);
                 reject({
                     status: 500,
                     error: { success: false, message: "Something went wrong" }
@@ -54,6 +53,19 @@ module.exports = {
                 const user = await User.findOne({ email })
                 if (!user) reject()
                 else resolve()
+            } catch (error) {
+                reject()
+            }
+        })
+    },
+    getAllUsers() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const users = await User.find({}, { password: 0, __v: 0 });
+                if (users.length !== 0) {
+                    resolve(users)
+                }
+                reject()
             } catch (error) {
                 reject()
             }
