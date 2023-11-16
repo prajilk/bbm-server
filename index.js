@@ -3,7 +3,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 require('dotenv').config()
 const { validateUser, registerUser, userLogin, getAllUsers } = require('./src/controllers/UserController.js');
-const { saveCounts, getCounts, getAllCounts, deleteCount, getUserCounts } = require('./src/controllers/CountsController.js');
+const { saveCounts, getCounts, getAllCounts, deleteCount, getUserCounts, getCount, updateCount } = require('./src/controllers/CountsController.js');
 const verifyAdmin = require('./src/middleware/verifyAdmin.js')
 const { default: axios } = require('axios');
 const { adminLogin } = require('./src/controllers/AdminController.js');
@@ -99,6 +99,29 @@ app.post("/api/admin/login", (req, res) => {
     adminLogin(data)
         .then((admin) => res.status(200).json({ success: true, user: admin }))
         .catch((error) => res.status(error.status).json(error.error))
+})
+
+app.get('/api/admin/count/:countId/:user', verifyAdmin, (req, res) => {
+    const countId = req.params.countId;
+    const user = req.params.user;
+    if (!countId || !user) return res.status(400).json({ count: null })
+    getCount(countId, user)
+        .then((countData) => {
+            return res.status(200).json({ count: countData })
+        })
+        .catch(() => res.status(500).json({ count: null }))
+})
+
+app.put('/api/admin/count/:countId/:user', (req, res) => {
+    const countId = req.params.countId;
+    const user = req.params.user;
+    const data = req.body;
+    if (!countId || !user) return res.status(400).json({ updated: false })
+    updateCount(countId, user, data)
+        .then(() => {
+            return res.status(200).json({ updated: true })
+        })
+        .catch(() => res.status(500).json({ updated: false }))
 })
 
 app.get('/api/admin/counts', verifyAdmin, (req, res) => {

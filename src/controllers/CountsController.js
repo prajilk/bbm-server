@@ -14,10 +14,27 @@ module.exports = {
                 const update = { $addToSet: { countData: { ...data, _id: new mongoose.Types.ObjectId } } };
                 const options = { upsert: true };
 
-                // await Count.create({ countData: data, user: userId });
                 await Count.updateOne(filter, update, options);
                 resolve()
             } catch (error) {
+                reject()
+            }
+        })
+    },
+    getCount: (id, user) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const userDetails = await User.findById({ _id: user }, { password: 0, __v: 0 })
+                const count = await Count.findOne({ user });
+                const countData = count.countData;
+                const result = countData.find((data) => (data._id.toString() === id))
+                const response = {
+                    count: result,
+                    user: userDetails
+                }
+                resolve(response);
+            } catch (error) {
+                console.log(error);
                 reject()
             }
         })
@@ -62,10 +79,26 @@ module.exports = {
             }
         })
     },
-    deleteCount(id, user) {
+    updateCount: (countId, user, data) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const deletedData = await Count.updateOne({ user }, { "$pull": { "countData": { "_id": new mongoose.Types.ObjectId(id) } } }, { safe: true })
+                await Count.findOneAndUpdate(
+                    { user, "countData._id": countId },
+                    {
+                        $set: {
+                            "countData.$": data,
+                        },
+                    })
+                resolve()
+            } catch (error) {
+                reject()
+            }
+        })
+    },
+    deleteCount(countId, user) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const deletedData = await Count.updateOne({ user }, { "$pull": { "countData": { "_id": new mongoose.Types.ObjectId(countId) } } }, { safe: true })
                 if (deletedData.modifiedCount !== 0)
                     resolve()
                 else reject()
