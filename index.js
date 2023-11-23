@@ -7,6 +7,7 @@ const { saveCounts, getCounts, getAllCounts, deleteCount, getUserCounts, getCoun
 const verifyAdmin = require('./src/middleware/verifyAdmin.js')
 const { default: axios } = require('axios');
 const { adminLogin } = require('./src/controllers/AdminController.js');
+const { syncData, getAllButterflies, deleteButterfly, updateButterfly, addButterfly } = require('./src/controllers/ButterflyController.js');
 const PORT = 5000;
 
 //Connect to database
@@ -148,6 +149,45 @@ app.get('/api/admin/users', verifyAdmin, (req, res) => {
     getAllUsers()
         .then((users) => res.status(200).json({ users }))
         .catch(() => res.status(500).json({ users: [] }))
+})
+
+app.get('/api/butterflies/sync/:date', (req, res) => {
+    const lastSyncDate = req.params.date;
+
+    syncData(lastSyncDate)
+        .then((response) => res.status(200).json(response))
+        .catch((error) => res.status(500).json(error));
+});
+
+app.get('/api/admin/butterflies', verifyAdmin, (req, res) => {
+    getAllButterflies()
+        .then(response => res.status(200).json({ butterflies: response.butterflies }))
+        .catch(() => res.status(500).json({ butterflies: null }))
+})
+
+app.post('/api/admin/butterflies', verifyAdmin, (req, res) => {
+    const data = req.body;
+    if (!data) return res.status(400).json({ error: true })
+    addButterfly(data)
+        .then((id) => res.status(200).json({ error: false, id }))
+        .catch(() => res.status(500).json({ error: true }))
+})
+
+app.delete('/api/admin/butterflies/:id', verifyAdmin, (req, res) => {
+    const id = req.params.id;
+    if (!id) return res.status(400).json({ error: true })
+    deleteButterfly(id)
+        .then(() => res.status(200).json({ error: false }))
+        .catch(() => res.status(500).json({ error: true }))
+})
+app.patch('/api/admin/butterflies/:id', verifyAdmin, (req, res) => {
+    const id = req.params.id;
+    const data = req.body
+    if (!id || !data) return res.status(400).json({ error: true })
+
+    updateButterfly(req.params.id, data)
+        .then(() => res.status(200).json({ error: false }))
+        .catch(() => res.status(500).json({ error: true }))
 })
 
 app.listen(PORT, console.log(`Server running on Port: ${PORT}`));
