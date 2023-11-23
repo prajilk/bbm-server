@@ -165,7 +165,7 @@ app.get('/api/admin/butterflies', verifyAdmin, (req, res) => {
         .catch(() => res.status(500).json({ butterflies: null }))
 })
 
-app.post('/api/admin/butterflies', verifyAdmin, (req, res) => {
+app.post('/api/admin/butterflies', (req, res) => {
     const data = req.body;
     if (!data) return res.status(400).json({ error: true })
     addButterfly(data)
@@ -173,14 +173,14 @@ app.post('/api/admin/butterflies', verifyAdmin, (req, res) => {
         .catch(() => res.status(500).json({ error: true }))
 })
 
-app.delete('/api/admin/butterflies/:id', verifyAdmin, (req, res) => {
+app.delete('/api/admin/butterflies/:id', (req, res) => {
     const id = req.params.id;
     if (!id) return res.status(400).json({ error: true })
     deleteButterfly(id)
         .then(() => res.status(200).json({ error: false }))
         .catch(() => res.status(500).json({ error: true }))
 })
-app.patch('/api/admin/butterflies/:id', verifyAdmin, (req, res) => {
+app.patch('/api/admin/butterflies/:id', (req, res) => {
     const id = req.params.id;
     const data = req.body
     if (!id || !data) return res.status(400).json({ error: true })
