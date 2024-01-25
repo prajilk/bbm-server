@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const serverless = require("serverless-http")
 const cookieParser = require('cookie-parser');
 require('dotenv').config()
 const { validateUser, registerUser, userLogin, getAllUsers } = require('./src/controllers/UserController.js');
@@ -8,7 +9,7 @@ const verifyAdmin = require('./src/middleware/verifyAdmin.js')
 const { default: axios } = require('axios');
 const { adminLogin } = require('./src/controllers/AdminController.js');
 const { syncData, getAllButterflies, deleteButterfly, updateButterfly, addButterfly } = require('./src/controllers/ButterflyController.js');
-const PORT = 5000;
+// const PORT = 5000;
 
 //Connect to database
 require('./src/config/db.js');
@@ -17,9 +18,9 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: ["http://localhost:3000", "https://bigbutterflymonth.vercel.app"], credentials: true }));
+app.use(cors({ origin: ["http://localhost:3000", "https://bigbutterflymonth.vercel.app", "http://chitte.org", "https://chitte.org"], credentials: true }));
 
-app.get('/', (req, res) => {
+app.get('/test', (req, res) => {
     res.send('Server created successfully!');
 })
 
@@ -190,4 +191,6 @@ app.patch('/api/admin/butterflies/:id', (req, res) => {
         .catch(() => res.status(500).json({ error: true }))
 })
 
-app.listen(PORT, console.log(`Server running on Port: ${PORT}`));
+// app.listen(PORT, console.log(`Server running on Port: ${PORT}`));
+
+module.exports.handler = serverless(app);
