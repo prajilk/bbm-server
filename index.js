@@ -18,7 +18,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: ["http://localhost:3000", "https://bigbutterflymonth.vercel.app", "http://chitte.org", "https://chitte.org"], credentials: true }));
+app.use(cors({ origin: ["http://localhost:3000", "https://bigbutterflymonth.vercel.app", "https://master.d2idlno7zvv92g.amplifyapp.com", "https://chitte.org"], credentials: true }));
 
 app.get('/test', (req, res) => {
     res.send('Server created successfully!');
