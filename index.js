@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const serverless = require("serverless-http")
+// const serverless = require("serverless-http")
 const cookieParser = require('cookie-parser');
 require('dotenv').config()
 const { validateUser, registerUser, userLogin, getAllUsers } = require('./src/controllers/UserController.js');
@@ -9,7 +9,7 @@ const verifyAdmin = require('./src/middleware/verifyAdmin.js')
 const { default: axios } = require('axios');
 const { adminLogin } = require('./src/controllers/AdminController.js');
 const { syncData, getAllButterflies, deleteButterfly, updateButterfly, addButterfly } = require('./src/controllers/ButterflyController.js');
-// const PORT = 5000;
+const PORT = 5000;
 
 //Connect to database
 require('./src/config/db.js');
@@ -191,6 +191,6 @@ app.patch('/api/admin/butterflies/:id', (req, res) => {
         .catch(() => res.status(500).json({ error: true }))
 })
 
-// app.listen(PORT, console.log(`Server running on Port: ${PORT}`));
+app.listen(PORT, console.log(`Server running on Port: ${PORT}`));
 
-module.exports.handler = serverless(app);
+// module.exports.handler = serverless(app);
